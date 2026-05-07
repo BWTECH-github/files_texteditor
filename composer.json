@@ -1,8 +1,12 @@
 {
-  "name": "owncloud/files_texteditor",
+  "name": "bwtech/files_texteditor",
+  "description": "Text Editor for owncloud.online, modified by BW-Tech GmbH for PHP 8.4 compatibility.",
+  "homepage": "https://github.com/GrossLukas/files_texteditor",
+  "license": "AGPL-3.0-only",
+  "modified-by": "BW-Tech GmbH",
   "config" : {
     "platform": {
-      "php": "8.3"
+      "php": "8.4"
     },
     "allow-plugins": {
       "bamarni/composer-bin-plugin": true
@@ -12,7 +16,7 @@
     "firebase/php-jwt": "^7"
   },
   "require": {
-    "php": ">=8.3"
+    "php": ">=8.4"
   },
   "require-dev": {
     "bamarni/composer-bin-plugin": "^1.8",
@@ -22,5 +26,9 @@
     "bamarni-bin": {
       "bin-links": false
     }
+  },
+  "support": {
+    "issues": "https://github.com/GrossLukas/files_texteditor/issues",
+    "source": "https://github.com/GrossLukas/files_texteditor"
   }
 }
