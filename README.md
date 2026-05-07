@@ -1,5 +1,7 @@
 # Texteditor
 
+Modified by BW-Tech GmbH for owncloud.online and PHP 8.4 compatibility.
+
 [![Build Status](https://drone.owncloud.com/api/badges/owncloud/files_texteditor/status.svg?branch=master)](https://drone.owncloud.com/owncloud/files_texteditor)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=owncloud_files_texteditor&metric=alert_status)](https://sonarcloud.io/dashboard?id=owncloud_files_texteditor)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=owncloud_files_texteditor&metric=security_rating)](https://sonarcloud.io/dashboard?id=owncloud_files_texteditor)
