@@ -380,7 +380,7 @@ var Files_Texteditor = {
 			+'<small class="unsaved-star" style="display: none">*</small>'
 			+'<small class="saving-message">'
 			+'</small>'
-			+'<button id="editor_close" class="icon-close svg"></button>';
+			+'<button id="editor_close" class="icon-close svg" aria-label="'+escapeHTML(t('files_texteditor', 'Close editor'))+'" title="'+escapeHTML(t('files_texteditor', 'Close editor'))+'"></button>';
 		var controlBar = $('<div id="editor_controls"></div>').html(html);
 		$('#editor_wrap').before(controlBar);
 		this.setFilenameMaxLength();
