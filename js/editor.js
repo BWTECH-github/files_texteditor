@@ -6,6 +6,7 @@
  *
  * @author Tom Needham <tom@owncloud.com>
  * @copyright Tom Needham 2015
+ * modified by BW-Tech GmbH
  */
 
 var Files_Texteditor = {
@@ -282,6 +283,7 @@ var Files_Texteditor = {
 	registerFileActions: function() {
 		var mimes = [
 				'text',
+				'text/plain',
 				'application/javascript',
 				'application/json',
 				'application/xml',
