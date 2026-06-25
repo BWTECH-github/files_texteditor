@@ -7,7 +7,6 @@ Modified by BW-Tech GmbH for owncloud.online and PHP 8.4 compatibility.
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=owncloud_files_texteditor&metric=security_rating)](https://sonarcloud.io/dashboard?id=owncloud_files_texteditor)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=owncloud_files_texteditor&metric=coverage)](https://sonarcloud.io/dashboard?id=owncloud_files_texteditor)
 
-
 The original text editor app for ownCloud, based on [Ace](http://ace.c9.io/).
 
 Features:
@@ -25,7 +24,6 @@ To use the editor, click on a [supported file](https://github.com/owncloud/files
 ## Contributors
 Maintainer: [Tom Needham](http://github.com/tomneedham)
 Past contributors: [Thomas Müller](http://github.com/deepdiver1975) [Robin Appelman](http://github.com/icewind) [Jörn Friedrich Dreyer](http://github.com/butonic) [Vincent Petry](http://github.com/pvince)
-
 
 Preview apps
 ------------
