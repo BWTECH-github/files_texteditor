@@ -58,7 +58,9 @@ class Application extends App {
 			Util::addStyle('files_texteditor', 'style');
 			Util::addStyle('files_texteditor', 'mobile');
 			Util::addscript('files_texteditor', 'editor');
-			Util::addscript('files_texteditor', 'vendor/ace/src-noconflict/ace');
+			// ace core (~665KB) is NOT loaded here anymore: editor.js pulls it in
+			// on demand the first time a file is actually opened for editing, so
+			// it no longer render-blocks every Files page load.
 		};
 
 		$eventDispatcher->addListener(
