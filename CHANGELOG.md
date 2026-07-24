@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased] -
 
 
+## [2.7.1] - 2026-07-23
+
+### Changed
+- Performance: the ~665 KB ACE editor core is now loaded lazily the first time a
+  file is opened for editing, instead of eagerly on every Files page load. This
+  removes ACE from the file-list critical path (it was render-blocking on every
+  Files/Files_Sharing view). Syntax modes and themes were already lazy-loaded;
+  editing behaviour is unchanged.
+
+
 ## [2.6.2] - 2025-09-18
 
 ### Fixed

@@ -317,6 +317,16 @@ var Files_Texteditor = {
 	 */
 	loadEditor: function(container, file) {
 		var _self = this;
+		// Lazy-load the ~665KB ace core only when a file is actually opened for
+		// editing, instead of eagerly on every Files page (keeps ace off the
+		// file-list critical path). ace's modes/themes already load on demand
+		// further down; editor.js itself never touches `ace` at parse time.
+		if (typeof ace === 'undefined') {
+			OC.addScript('files_texteditor', 'vendor/ace/src-noconflict/ace', function () {
+				_self.loadEditor(container, file);
+			});
+			return;
+		}
 		// Insert the editor into the container
 		container.html(
 			'<div id="editor_overlay"></div>'
