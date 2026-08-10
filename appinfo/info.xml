@@ -15,14 +15,14 @@
 	<version>2.7.1</version>
 	<default_enable/>
 	<documentation>
-		<user>https://github.com/GrossLukas/files_texteditor/blob/master/README.md</user>
-		<admin>https://github.com/GrossLukas/files_texteditor/blob/master/README.md</admin>
-		<developer>https://github.com/GrossLukas/files_texteditor/blob/master/README.md</developer>
+		<user>https://github.com/BWTECH-github/files_texteditor/blob/master/README.md</user>
+		<admin>https://github.com/BWTECH-github/files_texteditor/blob/master/README.md</admin>
+		<developer>https://github.com/BWTECH-github/files_texteditor/blob/master/README.md</developer>
 	</documentation>
 	<category>productivity</category>
-	<website>https://github.com/GrossLukas/files_texteditor</website>
-	<bugs>https://github.com/GrossLukas/files_texteditor/issues</bugs>
-	<repository type="git">https://github.com/GrossLukas/files_texteditor.git</repository>
+	<website>https://github.com/BWTECH-github/files_texteditor</website>
+	<bugs>https://github.com/BWTECH-github/files_texteditor/issues</bugs>
+	<repository type="git">https://github.com/BWTECH-github/files_texteditor.git</repository>
 	<screenshot>https://raw.githubusercontent.com/owncloud/screenshots/a068ff44c439aa4969ea37b60e45bed875bbbb98/files_texteditor/texteditor.png</screenshot>
 	<dependencies>
 		<owncloud min-version="11" max-version="11.99" />
