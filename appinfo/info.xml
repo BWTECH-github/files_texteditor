@@ -5,7 +5,7 @@
 	<name>Text Editor</name>
 	<namespace>Files_Texteditor</namespace>
 	<summary>Edit text files on the fly</summary>
-	<description>This application enables ownCloud users to view, save and edit text files in the file view. If enabled, an entry for 'Text file' is shown in the '+' button menu at the top of the files view. When clicked, a new text file opens in the browser and the file is saved into the current directory. Furthermore, when a text file is clicked in the file list, it will be opened and editable. If the permissions allow, a user can also edit shared files and save these changes right away in the file view.
+	<description>This application enables owncloud.online users to view, save and edit text files in the file view. If enabled, an entry for 'Text file' is shown in the '+' button menu at the top of the files view. When clicked, a new text file opens in the browser and the file is saved into the current directory. Furthermore, when a text file is clicked in the file list, it will be opened and editable. If the permissions allow, a user can also edit shared files and save these changes right away in the file view.
 		More information is available in the Text Editor documentation.
 
 		Modified by BW-Tech GmbH for owncloud.online and PHP 8.4 compatibility.
@@ -20,10 +20,9 @@
 		<developer>https://github.com/BWTECH-github/files_texteditor/blob/master/README.md</developer>
 	</documentation>
 	<category>productivity</category>
-	<website>https://github.com/BWTECH-github/files_texteditor</website>
+	<website>https://owncloud.online</website>
 	<bugs>https://github.com/BWTECH-github/files_texteditor/issues</bugs>
 	<repository type="git">https://github.com/BWTECH-github/files_texteditor.git</repository>
-	<screenshot>https://raw.githubusercontent.com/owncloud/screenshots/a068ff44c439aa4969ea37b60e45bed875bbbb98/files_texteditor/texteditor.png</screenshot>
 	<dependencies>
 		<owncloud min-version="11" max-version="11.99" />
 		<php min-version="8.4" />
