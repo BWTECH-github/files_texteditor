@@ -2,12 +2,7 @@
 
 Modified by BW-Tech GmbH for owncloud.online and PHP 8.4 compatibility.
 
-[![Build Status](https://drone.owncloud.com/api/badges/owncloud/files_texteditor/status.svg?branch=master)](https://drone.owncloud.com/owncloud/files_texteditor)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=owncloud_files_texteditor&metric=alert_status)](https://sonarcloud.io/dashboard?id=owncloud_files_texteditor)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=owncloud_files_texteditor&metric=security_rating)](https://sonarcloud.io/dashboard?id=owncloud_files_texteditor)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=owncloud_files_texteditor&metric=coverage)](https://sonarcloud.io/dashboard?id=owncloud_files_texteditor)
-
-The original text editor app for ownCloud, based on [Ace](http://ace.c9.io/).
+The original text editor app for owncloud.online, based on [Ace](http://ace.c9.io/).
 
 Features:
  - Syntax highlighting
@@ -16,10 +11,10 @@ Features:
  - Responsive design (optimised on mobile and desktop)
 
 ## Install
-Simply copy the `files_texteditor` folder into the `apps` directory and enable the app within the ownCloud settings.
+Simply copy the `files_texteditor` folder into the `apps` directory and enable the app within the owncloud.online settings.
 
 ## Usage
-To use the editor, click on a [supported file](https://github.com/owncloud/files_texteditor/blob/master/js/editor.js#L6) within the Files app and the file will be loaded into the editor. Saving is automatic, but can also be triggered manually with `Ctrl+S` or `Cmd+S`.
+To use the editor, click on a [supported file](https://github.com/BWTECH-github/files_texteditor/blob/master/js/editor.js#L6) within the Files app and the file will be loaded into the editor. Saving is automatic, but can also be triggered manually with `Ctrl+S` or `Cmd+S`.
 
 ## Contributors
 Maintainer: [Tom Needham](http://github.com/tomneedham)
