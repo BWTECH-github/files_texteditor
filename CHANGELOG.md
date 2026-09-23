@@ -4,6 +4,12 @@ All notable changes to this app will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.7.4] - 2026-09-23
+
+### Fixed
+
+- Der Editor blieb leer, jeder Ladeaufruf endete mit HTTP 500 („Failed opening required …/vendor/autoload.php“), wenn das Paket ohne vendor/ ausgeliefert wurde. composer.json verlangt keine Laufzeitpakete, Firebase\JWT kommt aus dem Kern; der Autoloader wird jetzt nur geladen, wenn er da ist.
+
 ## [2.7.3] - 2026-08-13
 
 ### Changed

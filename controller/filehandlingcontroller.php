@@ -44,7 +44,14 @@ use Sabre\DAV\Exception\NotFound;
 
 use Firebase\JWT\JWT;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+// Nur laden, wenn vorhanden: composer.json verlangt keine Laufzeitpakete
+// (Firebase\JWT kommt aus dem Kern), vendor/ entsteht also nur, wenn der
+// Paketbau composer ausführt. Fehlte es, brach jeder Aufruf mit HTTP 500
+// ab („Failed opening required …/vendor/autoload.php“) und der Editor
+// blieb leer (Befund Redesign-Server 23.09.2026).
+if (\is_file(__DIR__ . '/../vendor/autoload.php')) {
+	require_once __DIR__ . '/../vendor/autoload.php';
+}
 
 class FileHandlingController extends Controller {
 	/** @var IL10N */
