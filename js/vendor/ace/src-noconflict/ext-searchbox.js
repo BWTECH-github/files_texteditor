@@ -176,6 +176,30 @@ var SearchBox = function(editor, range, showReplaceForm) {
     var div = dom.createElement("div");
     div.innerHTML = html;
     this.element = div.firstChild;
+    // owncloud.online: ace 1.2.6 kennt keine Übersetzung; Beschriftungen der
+    // Suchleiste über den Katalog von files_texteditor setzen.
+    if (typeof t === "function") {
+        var el = this.element;
+        var tr = function(text) { return t("files_texteditor", text); };
+        var setze = function(selektor, attribut, text) {
+            var knoten = el.querySelector(selektor);
+            if (!knoten) return;
+            if (attribut) knoten.setAttribute(attribut, text);
+            else knoten.textContent = text;
+        };
+        var felder = el.querySelectorAll(".ace_search_field");
+        if (felder[0]) felder[0].setAttribute("placeholder", tr("Search for"));
+        if (felder[1]) felder[1].setAttribute("placeholder", tr("Replace with"));
+        setze("[action=hide]", "aria-label", tr("Close search"));
+        setze("[action=findNext]", "aria-label", tr("Next match"));
+        setze("[action=findPrev]", "aria-label", tr("Previous match"));
+        setze("[action=findAll]", null, tr("All"));
+        setze("[action=replaceAndFindNext]", null, tr("Replace"));
+        setze("[action=replaceAll]", null, tr("All"));
+        setze("[action=toggleRegexpMode]", "title", tr("Regular expression"));
+        setze("[action=toggleCaseSensitive]", "title", tr("Match case"));
+        setze("[action=toggleWholeWords]", "title", tr("Whole word"));
+    }
 
     this.$init();
     this.setEditor(editor);

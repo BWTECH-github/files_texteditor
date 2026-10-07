@@ -4,6 +4,15 @@ All notable changes to this app will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.7.5] - 2026-10-07
+
+### Fixed
+
+- Sprache: de_DE schlug als Namen einer neuen Textdatei „Neue Textdatei file.txt“ vor; jetzt „Neue Textdatei.txt“ wie in de.
+- Sprache: Der Schließen-Knopf des Editors („Close editor“, Tooltip und Sprachausgabe) und die Fehlermeldungen bei fehlender Leseberechtigung bzw. fehlendem Linkpasswort waren in keinem deutschen Katalog.
+- Suchleiste (Strg+F/Strg+H): ace 1.2.6 bringt feste englische Texte mit („Search for“, „Replace with“, „All“, „Replace“, Tooltips der Optionen). Die Suchleiste setzt ihre Beschriftungen jetzt über den Katalog der App; die reinen Symbolknöpfe (Schließen, nächster/vorheriger Treffer) haben dabei einen Namen für die Sprachausgabe bekommen.
+- de_CH: 23 Texte ergänzt, die de schon hatte (u. a. „Im Texteditor öffnen“, Sperr- und Schreibschutzhinweise).
+
 ## [2.7.4] - 2026-09-23
 
 ### Fixed
