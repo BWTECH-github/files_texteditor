@@ -4,6 +4,16 @@ All notable changes to this app will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.7.6] - 2026-10-08
+
+### Behoben
+
+- Der Dateiname in der Kopfzeile des Editors bricht um, statt mit „…“ auf
+  höchstens 218 px gekürzt zu werden. Die Kopfzeile wächst mit; Editor und
+  Vorschau beginnen direkt unter ihrer tatsächlichen Unterkante
+  (fitEditorToControlBar ersetzt setFilenameMaxLength). Auch der Hinweis
+  „schreibgeschützt“ bricht um.
+
 ## [2.7.4] - 2026-09-23
 
 ### Fixed
