@@ -3,9 +3,14 @@
 	font-size: 13px !important;
 }
 
+/* Die Kopfzeile wächst mit dem Dateinamen: Er bricht um, statt mit „…“ zu
+   enden. editor.js (fitEditorToControlBar) rückt Editor und Vorschau
+   unter die tatsächliche Höhe der Kopfzeile. */
 #editor_controls {
+	display: flex;
+	align-items: flex-start;
 	background-color: white;
-	height: 44px;
+	min-height: 44px;
 	position: absolute;
 	top: 0;
 	width: 100%;
@@ -132,12 +137,13 @@
 }
 
 #editor_close {
-	float: right;
+	flex: 0 0 auto;
 	width: 34px;
 	border: none;
 	background-color: transparent;
 	padding: 22px !important;
 	margin: 0 !important;
+	margin-left: auto !important;
 	border-radius: 0;
 	right: 0;
 	opacity: 0.7;
@@ -153,26 +159,30 @@
 }
 
 #editor_controls small.filename {
-	float: left;
+	flex: 0 1 auto;
+	min-width: 0;
 	color: #555;
 	font-family: inherit;
 	font-size: 100%;
 	font-weight: bolder;
-	text-overflow: ellipsis;
-	padding: 12px 0 0 14px;
-	max-width: 218px;
-	overflow: hidden;
-	white-space: nowrap;
+	padding: 12px 0 12px 14px;
+	overflow-wrap: anywhere;
+}
+
+#editor_controls small.unsaved-star {
+	flex: 0 0 auto;
+	padding-top: 12px;
 }
 
 #editor_controls small.saving-message {
+	flex: 0 1 auto;
+	min-width: 0;
 	color: #ccc;
 	font-family: inherit;
 	font-size: 90%;
-	padding: 13px 0 13px 17px;
-	overflow: hidden;
 	display: inline-block;
-	padding: 13px 0 0 17px;
+	padding: 13px 0 13px 17px;
+	overflow-wrap: anywhere;
 }
 
  #editor_overlay{

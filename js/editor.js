@@ -363,6 +363,7 @@ var Files_Texteditor = {
 					_self.preview.addClass(file.mime.replace('/','-'));
 					container.find('#editor_container').addClass('hasPreview');
 					container.find('#editor_overlay').addClass('hasPreview');
+					_self.fitEditorToControlBar();
 					_self.previewPluginOnChange = _.debounce(_self.previewPlugins[file.mime].preview, 200);
 					var text = window.aceEditor.getSession().getValue();
 					_self.previewPluginOnChange(text, _self.preview);
@@ -395,7 +396,7 @@ var Files_Texteditor = {
 			+'<button id="editor_close" class="icon-close svg" aria-label="'+escapeHTML(t('files_texteditor', 'Close editor'))+'" title="'+escapeHTML(t('files_texteditor', 'Close editor'))+'"></button>';
 		var controlBar = $('<div id="editor_controls"></div>').html(html);
 		$('#editor_wrap').before(controlBar);
-		this.setFilenameMaxLength();
+		this.fitEditorToControlBar();
 		this.bindControlBar();
 		
 		if (!file.writeable && file.locked) {
@@ -418,17 +419,20 @@ var Files_Texteditor = {
 	},
 
 	/**
-	 * Set the max width of the filename to prevent wrapping
+	 * Der Dateiname bricht in der Kopfzeile um, statt mit „…“ abgeschnitten zu
+	 * werden. Die Kopfzeile ist dadurch unterschiedlich hoch; Editor und Vorschau
+	 * beginnen deshalb direkt unter ihrer tatsächlichen Unterkante.
 	 */
-	setFilenameMaxLength: function() {
-		// Get the width of the control bar
-		var controlBar = $('#editor_controls').width();
-		// Get the width of all of the other controls
-		var controls = $('small.saving-message').outerWidth(true);
-		controls += $('small.unsaved-star').outerWidth(true);
-		controls += $('#editor_close').outerWidth(true);
-		// Set the max width
-		$('small.filename').css('max-width', controlBar-controls-28);
+	fitEditorToControlBar: function() {
+		var $controls = $('#editor_controls');
+		if (!$controls.length) {
+			return;
+		}
+		var top = $controls.position().top + $controls.outerHeight() + 2;
+		$('#editor_wrap, #preview_wrap').css('padding-top', top + 'px');
+		if (window.aceEditor) {
+			window.aceEditor.resize();
+		}
 	},
 
 	/**
@@ -437,7 +441,7 @@ var Files_Texteditor = {
 	bindControlBar: function() {
 		var self = this;
 		$('#editor_close').on('click', _.bind(this._onCloseTrigger, this));
-		$(window).resize(OCA.Files_Texteditor.setFilenameMaxLength);
+		$(window).resize(_.bind(this.fitEditorToControlBar, this));
 		if(!$('html').hasClass('ie8')) {
 			window.onpopstate = function (e) {
 				self._onCloseTrigger();
