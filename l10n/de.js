@@ -27,6 +27,19 @@ OC.L10N.register(
     "file is read-only, locked by {locked}" : "Datei ist schreibgeschützt, blockiert von {locked}",
     "file is read-only" : "Datei ist schreibgeschützt",
     "Text file" : "Textdatei",
-    "New text file.txt" : "Neue Textdatei.txt"
+    "New text file.txt" : "Neue Textdatei.txt",
+    "Close editor" : "Editor schließen",
+    "Cannot read the file. Not enough permissions" : "Die Datei kann nicht gelesen werden – fehlende Berechtigung.",
+    "Access to this resource requires a password. Either no password has been supplied, or a wrong password has been used" : "Für den Zugriff ist ein Passwort nötig. Es wurde keines oder ein falsches eingegeben.",
+    "Search for" : "Suchen nach",
+    "Replace with" : "Ersetzen durch",
+    "Close search" : "Suche schließen",
+    "Next match" : "Nächster Treffer",
+    "Previous match" : "Vorheriger Treffer",
+    "All" : "Alle",
+    "Replace" : "Ersetzen",
+    "Regular expression" : "Regulärer Ausdruck",
+    "Match case" : "Groß-/Kleinschreibung beachten",
+    "Whole word" : "Ganzes Wort"
 },
 "nplurals=2; plural=(n != 1);");
