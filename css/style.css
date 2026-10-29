@@ -119,8 +119,10 @@
 		border-radius: 0;
 	}
 
+	/* Im Redesign deckt der Editor auf Telefonen das ganze Fenster ab (über
+	   der Kopfleiste): kein Versatz für eine 45-px-Kopfleiste mehr */
 	#editor_controls {
-		top: 45px;
+		top: 0;
 	}
 
 	#editor_wrap {
@@ -177,7 +179,8 @@
 #editor_controls small.saving-message {
 	flex: 0 1 auto;
 	min-width: 0;
-	color: #ccc;
+	/* lesbar auf Weiß (WCAG 1.4.3), statt #ccc */
+	color: var(--oco-text-secondary, #5b6675);
 	font-family: inherit;
 	font-size: 90%;
 	display: inline-block;

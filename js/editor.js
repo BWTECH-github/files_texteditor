@@ -197,6 +197,10 @@ var Files_Texteditor = {
 		if($('#notification').data('reopeneditor') == true) {
 			document.title = OCA.Files_Texteditor.file.name + ' - ' + OCA.Files_Texteditor.oldTitle;
 			OCA.Files_Texteditor.$container.show();
+			OCA.Files_Texteditor._isolate(OCA.Files_Texteditor.$container.get(0));
+			if (window.aceEditor) {
+				window.aceEditor.focus();
+			}
 		}
 	},
 
@@ -334,6 +338,14 @@ var Files_Texteditor = {
 			+'<div id="editor_wrap"><div id="editor"></div>'
 			+'<div id="preview_wrap"><div id="preview"></div></div></div></div>');
 		$('#content').append(container);
+		// Modaler Dialog: benannt, die verdeckte Seite dahinter ist für Tab und
+		// Sprachausgabe nicht erreichbar
+		$('#editor_container').attr({
+			'role': 'dialog',
+			'aria-modal': 'true',
+			'aria-label': file.name
+		});
+		this._isolate(container.get(0));
 
 
 		// Get the file data
@@ -398,6 +410,13 @@ var Files_Texteditor = {
 		$('#editor_wrap').before(controlBar);
 		this.fitEditorToControlBar();
 		this.bindControlBar();
+		// Escape im Textfeld führt hierher, ein weiteres Escape schließt
+		$('#editor_close').on('keydown', function (e) {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				OCA.Files_Texteditor._onCloseTrigger();
+			}
+		});
 		
 		if (!file.writeable && file.locked) {
 			$('#editor_controls small.saving-message')
@@ -490,6 +509,21 @@ var Files_Texteditor = {
 
 		// disable Ctrl-T shortcut in ace to allow new tab feature in browser
 		window.aceEditor.commands.removeCommand(window.aceEditor.commands.byName.transposeletters);
+		// Das Eingabefeld von Ace trägt den Dateinamen (Sprachausgabe)
+		window.aceEditor.textInput.getElement().setAttribute('aria-label', file.name);
+		// Tab rückt im Editor ein; Escape führt aus dem Textfeld heraus zum
+		// Schließen-Knopf (sonst gäbe es für die Tastatur keinen Weg hinaus)
+		window.aceEditor.commands.addCommand({
+			name: 'ocoLeaveEditor',
+			bindKey: {win: 'Esc', mac: 'Esc'},
+			exec: function (editor) {
+				if (editor.inMultiSelectMode) {
+					editor.exitMultiSelectMode();
+					return;
+				}
+				$('#editor_close').focus();
+			}
+		});
 	},
 
 	/**
@@ -653,6 +687,7 @@ var Files_Texteditor = {
 		this.$container.html('').show();
 		this.unloadControlBar();
 		this.unBindVisibleActions();
+		this._release();
 		if (this.fileInfoModel && this.file.size) {
 			this.fileInfoModel.set({
 				// temp dummy, until we can do a PROPFIND
@@ -662,6 +697,8 @@ var Files_Texteditor = {
 			});
 		}
 		document.title = this.oldTitle;
+		// erst nach dem Aktualisieren der Zeile (sie wird dabei neu gezeichnet)
+		this._restoreFocus(this.file.name);
 	},
 
 	/**
@@ -671,6 +708,47 @@ var Files_Texteditor = {
 		this.$container.hide();
 		document.title = this.oldTitle;
 		this.unBindVisibleActions();
+		this._release();
+		this._restoreFocus(this.file.name);
+	},
+
+	/**
+	 * Alles außer dem Editor vorübergehend inert schalten (Meldungen bleiben
+	 * bedienbar, damit „Klicken, um weiterzubearbeiten“ erreichbar ist).
+	 */
+	_isolate: function(el) {
+		for (var n = el; n && n.parentElement && n !== document.body; n = n.parentElement) {
+			$(n).siblings().each(function () {
+				if (/^(SCRIPT|STYLE|LINK|TEMPLATE)$/.test(this.tagName) || this.hasAttribute('inert')) {
+					return;
+				}
+				if (this.id === 'notification-container' || $(this).find('#notification-container').length) {
+					return;
+				}
+				this.setAttribute('inert', '');
+				this.setAttribute('data-texteditor-inert', '');
+			});
+		}
+	},
+
+	_release: function() {
+		$('[data-texteditor-inert]').removeAttr('inert').removeAttr('data-texteditor-inert');
+	},
+
+	/**
+	 * Nach dem Schließen zurück auf die Zeile der Datei in der Liste.
+	 */
+	_restoreFocus: function(fileName) {
+		if (!fileName) {
+			return;
+		}
+		var $zeile = $('#fileList tr[data-file]').filter(function () {
+			return this.getAttribute('data-file') === fileName;
+		}).first();
+		var ziel = $zeile.find('a.name').get(0) || $zeile.get(0);
+		if (ziel && typeof ziel.focus === 'function') {
+			ziel.focus();
+		}
 	},
 
 	/**

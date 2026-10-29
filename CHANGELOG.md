@@ -4,6 +4,17 @@ All notable changes to this app will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.7.7] - 2026-10-29
+
+### Behoben
+
+- Der Editor ist ein modaler Dialog: benannt, die Seite dahinter ist nicht
+  erreichbar, nach dem Schließen steht der Fokus wieder auf der Datei.
+- Tastatur: Escape führt aus dem Textfeld zum Schließen-Knopf, ein weiteres
+  Escape schließt den Editor; das Textfeld trägt den Dateinamen.
+- Telefone: Kopfzeile oben im Editor ohne leeren Streifen darüber.
+- Statusmeldungen („gespeichert!“, „Datei ist schreibgeschützt“) lesbar.
+
 ## [2.7.6] - 2026-10-08
 
 ### Behoben
