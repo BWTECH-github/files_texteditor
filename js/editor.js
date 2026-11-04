@@ -279,6 +279,16 @@ var Files_Texteditor = {
 		$(window).on('unload', function () {
 			$(window).trigger('beforeunload');
 		});
+		// Zurück/Vorwärts schließt einen offenen Editor. window.onpopstate gehört
+		// dem Kern (OC.Util.History) – ersetzt, wechselte die Dateiliste dabei
+		// nicht mehr den Ordner.
+		if (window.addEventListener && !$('html').hasClass('ie8')) {
+			window.addEventListener('popstate', function () {
+				if (OCA.Files_Texteditor.file.opened) {
+					OCA.Files_Texteditor._onCloseTrigger();
+				}
+			});
+		}
 	},
 
 	/**
@@ -298,7 +308,12 @@ var Files_Texteditor = {
 				'application/yaml'
 			];
 
-		_self = this;
+		// Seiten ohne Dateiliste haben keine Dateiaktionen
+		if (!OCA.Files || !OCA.Files.fileActions) {
+			return;
+		}
+
+		var _self = this;
 
 		$.each(mimes, function(key, value) {
 			OCA.Files.fileActions.registerAction({
@@ -458,14 +473,8 @@ var Files_Texteditor = {
 	 * Binds the control events on the control bar
 	 */
 	bindControlBar: function() {
-		var self = this;
 		$('#editor_close').on('click', _.bind(this._onCloseTrigger, this));
 		$(window).resize(_.bind(this.fitEditorToControlBar, this));
-		if(!$('html').hasClass('ie8')) {
-			window.onpopstate = function (e) {
-				self._onCloseTrigger();
-			}
-		}
 	},
 
 	/**
