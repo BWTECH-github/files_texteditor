@@ -198,6 +198,9 @@ var Files_Texteditor = {
 			document.title = OCA.Files_Texteditor.file.name + ' - ' + OCA.Files_Texteditor.oldTitle;
 			OCA.Files_Texteditor.$container.show();
 			OCA.Files_Texteditor._isolate(OCA.Files_Texteditor.$container.get(0));
+			// Der Verlaufseintrag wurde beim Ausblenden zurückgenommen: neu
+			// setzen, damit „Zurück“ den wieder offenen Editor schließt.
+			OCA.Files_Texteditor._pushHistoryEntry();
 			if (window.aceEditor) {
 				window.aceEditor.focus();
 			}
@@ -216,8 +219,40 @@ var Files_Texteditor = {
 			OCA.Files_Texteditor.$container,
 			OCA.Files_Texteditor.file
 		);
-		if(!$('html').hasClass('ie8')) {
-			history.pushState({file:filename, dir:context.dir}, 'Editor', '#editor');
+		this._pushHistoryEntry(true);
+	},
+
+	/**
+	 * Eigener Verlaufseintrag (#editor): „Zurück“ schließt den Editor.
+	 * Beim Öffnen immer, beim Wiederaufnehmen nur, wenn er fehlt.
+	 */
+	_pushHistoryEntry: function(always) {
+		if (!$('html').hasClass('ie8') && (always || !OCA.Files_Texteditor._ownHistoryEntry())) {
+			history.pushState({file: this.file.name, dir: this.file.dir, ocoTexteditor: true}, 'Editor', '#editor');
+		}
+	},
+
+	/**
+	 * Steht der Verlauf noch auf dem eigenen Eintrag?
+	 */
+	_ownHistoryEntry: function() {
+		return !!(window.history && history.state && history.state.ocoTexteditor === true);
+	},
+
+	/**
+	 * Schließt der Editor über Kreuz, Escape oder einen Klick daneben, bleibt
+	 * sein Verlaufseintrag sonst stehen und „Zurück“ braucht einen Druck mehr.
+	 * Beim Schließen über „Zurück“ ist der Eintrag schon weg.
+	 */
+	_dropHistoryEntry: function() {
+		// Läuft ein Zurück noch (Ausblenden beim Speichern, dann Schließen),
+		// steht history.state bis zu dessen Ende auf dem eigenen Eintrag:
+		// kein zweites Zurück, sonst verließe es den Ordner.
+		if (!$('html').hasClass('ie8') && !OCA.Files_Texteditor._ignoreNextPop
+			&& OCA.Files_Texteditor._ownHistoryEntry()) {
+			// den eigenen popstate-Handler für genau diesen Schritt aussetzen
+			OCA.Files_Texteditor._ignoreNextPop = true;
+			history.back();
 		}
 	},
 
@@ -284,6 +319,10 @@ var Files_Texteditor = {
 		// nicht mehr den Ordner.
 		if (window.addEventListener && !$('html').hasClass('ie8')) {
 			window.addEventListener('popstate', function () {
+				if (OCA.Files_Texteditor._ignoreNextPop) {
+					OCA.Files_Texteditor._ignoreNextPop = false;
+					return;
+				}
 				if (OCA.Files_Texteditor.file.opened) {
 					OCA.Files_Texteditor._onCloseTrigger();
 				}
@@ -450,6 +489,7 @@ var Files_Texteditor = {
 	 */
 	unloadControlBar: function() {
 		$('#editor_controls').remove();
+		$(window).off('resize.oco-te');
 	},
 
 	/**
@@ -474,7 +514,8 @@ var Files_Texteditor = {
 	 */
 	bindControlBar: function() {
 		$('#editor_close').on('click', _.bind(this._onCloseTrigger, this));
-		$(window).resize(_.bind(this.fitEditorToControlBar, this));
+		// genau ein Handler, egal wie oft der Editor geöffnet wurde
+		$(window).off('resize.oco-te').on('resize.oco-te', _.bind(this.fitEditorToControlBar, this));
 	},
 
 	/**
@@ -693,6 +734,7 @@ var Files_Texteditor = {
 	 * Close the editor for good
 	 */
 	closeEditor: function() {
+		this._dropHistoryEntry();
 		this.$container.html('').show();
 		this.unloadControlBar();
 		this.unBindVisibleActions();
@@ -714,6 +756,7 @@ var Files_Texteditor = {
 	 * Hide the editor (unsaved changes)
 	 */
 	hideEditor: function() {
+		this._dropHistoryEntry();
 		this.$container.hide();
 		document.title = this.oldTitle;
 		this.unBindVisibleActions();

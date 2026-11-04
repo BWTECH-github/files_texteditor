@@ -12,7 +12,7 @@
 	</description>
 	<licence>AGPL</licence>
 	<author>ownCloud contributors, modified by BW-Tech GmbH</author>
-	<version>2.7.8</version>
+	<version>3.0.0</version>
 	<default_enable/>
 	<documentation>
 		<user>https://github.com/BWTECH-github/files_texteditor/blob/master/README.md</user>
@@ -24,7 +24,7 @@
 	<bugs>https://github.com/BWTECH-github/files_texteditor/issues</bugs>
 	<repository type="git">https://github.com/BWTECH-github/files_texteditor.git</repository>
 	<dependencies>
-		<owncloud min-version="11" max-version="11.99" />
+		<owncloud min-version="11.1" max-version="11.99" />
 		<php min-version="8.4" />
 	</dependencies>
 </info>
