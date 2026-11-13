@@ -4,6 +4,13 @@ All notable changes to this app will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.0.1] - 2026-11-13
+
+### Behoben
+- Schreibgeschützte Dateien (Linkseite, Freigabe ohne Schreibrecht): Escape führt aus dem Textfeld zum Schließen-Knopf; vorher saß die Tastatur im Editor fest.
+- Linkseite: nach dem Schließen steht der Fokus wieder auf der Datei in der Liste.
+- Schließen-Knopf als runder Symbolknopf; sein Fokusring wird nicht mehr abgeschnitten.
+
 ## [3.0.0] - 2026-11-04
 
 Eigene Versionslinie des Redesign-Zweigs.

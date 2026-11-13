@@ -321,6 +321,7 @@ var Files_Texteditor = {
 			window.addEventListener('popstate', function () {
 				if (OCA.Files_Texteditor._ignoreNextPop) {
 					OCA.Files_Texteditor._ignoreNextPop = false;
+					OCA.Files_Texteditor._refocusAfterReload();
 					return;
 				}
 				if (OCA.Files_Texteditor.file.opened) {
@@ -566,6 +567,9 @@ var Files_Texteditor = {
 		window.aceEditor.commands.addCommand({
 			name: 'ocoLeaveEditor',
 			bindKey: {win: 'Esc', mac: 'Esc'},
+			// auch schreibgeschützt (Linkseite, Freigabe ohne Schreibrecht):
+			// Ace führt Befehle ohne readOnly dort nicht aus – Tastaturfalle
+			readOnly: true,
 			exec: function (editor) {
 				if (editor.inMultiSelectMode) {
 					editor.exitMultiSelectMode();
@@ -785,6 +789,32 @@ var Files_Texteditor = {
 
 	_release: function() {
 		$('[data-texteditor-inert]').removeAttr('inert').removeAttr('data-texteditor-inert');
+	},
+
+	/**
+	 * Die Linkseite lädt beim Zurück den Ordner neu (der Kern ruft dort
+	 * changeDirectory mit force) und zeichnet die Zeilen neu: der Fokus auf
+	 * der Dateizeile ginge an body verloren. Der Kern-Handler läuft vor
+	 * diesem (window.onpopstate ist früher gesetzt), ein Neuladen ist also
+	 * schon unterwegs; danach noch einmal auf die Zeile – nur, wenn der
+	 * Fokus inzwischen nirgends sonst steht.
+	 */
+	_refocusAfterReload: function() {
+		var fileList = this.currentContext && this.currentContext.fileList;
+		var call = fileList && fileList._reloadCall;
+		var name = this.file && this.file.name;
+		if (!name || !call || typeof call.then !== 'function') {
+			return;
+		}
+		var self = this;
+		call.then(function () {
+			_.defer(function () {
+				var aktiv = document.activeElement;
+				if (!self.file.opened && (!aktiv || aktiv === document.body)) {
+					self._restoreFocus(name);
+				}
+			});
+		});
 	},
 
 	/**

@@ -138,21 +138,28 @@
 	}
 }
 
+/* Runder Symbolknopf (MASSSTAB 3.1), mittig in der 44 hohen Kopfzeile; der
+   Abstand zum Rand hält den Fokusring frei vom overflow des Containers */
 #editor_close {
 	flex: 0 0 auto;
-	width: 34px;
+	box-sizing: border-box;
+	width: 32px;
+	height: 32px;
+	min-height: 0;
+	padding: 0;
+	margin: 6px 6px 6px auto;
 	border: none;
+	border-radius: var(--oco-radius-pill);
 	background-color: transparent;
-	padding: 22px !important;
-	margin: 0 !important;
-	margin-left: auto !important;
-	border-radius: 0;
-	right: 0;
-	opacity: 0.7;
+	background-position: center;
+	background-size: 16px;
+	opacity: .55;
 }
 
-#editor_close:hover {
-	background-color: #ddd;
+#editor_close:hover,
+#editor_close:focus-visible {
+	background-color: var(--oco-surface-muted);
+	opacity: 1;
 }
 
 #editorcontrols > button {
