@@ -4,6 +4,12 @@ All notable changes to this app will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- Auf Link-Seiten suchte der Editor nachgeladene Teile relativ zur Seite, z. B. `/s/worker-html.js`, und erzeugte Fehler im Server-Log. Der Pfad ist jetzt fest gesetzt, die nicht mitgelieferten Syntax-Worker sind aus.
+
 ## [2.7.3] - 2026-08-13
 
 ### Changed
