@@ -523,7 +523,12 @@ var Files_Texteditor = {
 	 * Configure the ACE editor
 	 */
 	configureACE: function(file) {
+		// ace wird nachgeladen und findet seinen eigenen Pfad dann nicht. Ohne basePath löst es
+		// nachgeladene Teile relativ zur Seite auf (auf Link-Seiten z. B. /s/worker-html.js).
+		ace.config.set('basePath', OC.filePath('files_texteditor', 'js', 'vendor/ace/src-noconflict'));
 		window.aceEditor = ace.edit(this.editor);
+		// Syntax-Worker liefern wir nicht mit, sonst lädt jeder HTML-, JS- oder CSS-Modus eine fehlende Datei
+		aceEditor.getSession().setUseWorker(false);
 		aceEditor.setShowPrintMargin(false);
 		aceEditor.getSession().setUseWrapMode(true);
 		if (!file.writeable) {
