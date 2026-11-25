@@ -31,6 +31,7 @@ use OCP\Files\File;
 use OCP\Files\ForbiddenException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Storage\IPersistentLockingStorage;
+use OCP\IConfig;
 use OCP\Lock\Persistent\ILock;
 use OCP\IL10N;
 use OCP\ILogger;
@@ -69,7 +70,8 @@ class FileHandlingController extends Controller {
 	/** @var IRootFolder */
 	private $root;
 
-	public const string JWT_SECRET_KEY = 'jwt-secret-key-for-files_texteditor';
+	/** @var IConfig */
+	private $config;
 
 	/**
 	 * @NoAdminRequired
@@ -81,6 +83,7 @@ class FileHandlingController extends Controller {
 	 * @param IManager $shareManager
 	 * @param IUserSession $userSession
 	 * @param IRootFolder $root
+	 * @param IConfig $config
 	 */
 	public function __construct(
 		$AppName,
@@ -89,7 +92,8 @@ class FileHandlingController extends Controller {
 		ILogger $logger,
 		IManager $shareManager,
 		IUserSession $userSession,
-		IRootFolder $root
+		IRootFolder $root,
+		IConfig $config
 	) {
 		parent::__construct($AppName, $request);
 		$this->l = $l10n;
@@ -97,6 +101,7 @@ class FileHandlingController extends Controller {
 		$this->shareManager = $shareManager;
 		$this->userSession = $userSession;
 		$this->root = $root;
+		$this->config = $config;
 	}
 
 	/**
@@ -532,6 +537,15 @@ class FileHandlingController extends Controller {
 		return false;
 	}
 
+	/**
+	 * Schlüssel der Sperr-Token aus dem Instanzgeheimnis (config.php „secret“).
+	 * Ein fester Schlüssel im Code machte die Token fremder Bearbeiter
+	 * berechenbar; damit ließ sich deren Sperre per WebDAV umgehen.
+	 */
+	private function getLockTokenKey(): string {
+		return \hash_hmac('sha256', 'files_texteditor-persistent-lock', (string)$this->config->getSystemValue('secret', ''));
+	}
+
 	private function getTokenForUserAccess(int $fileId, string $fileParentPath, string $userId): string {
 		// as this app is not collaborative, the token is static
 		return JWT::encode([
@@ -539,7 +553,7 @@ class FileHandlingController extends Controller {
 			'st' => '',
 			'fid' => $fileId,
 			'fpp' => $fileParentPath,
-		], self::JWT_SECRET_KEY, 'HS256');
+		], $this->getLockTokenKey(), 'HS256');
 	}
 
 	private function getTokenForPublicLinkAccess(int $fileId, string $fileParentPath, string $sharingToken): string {
@@ -549,6 +563,6 @@ class FileHandlingController extends Controller {
 			'st' => $sharingToken,
 			'fid' => $fileId,
 			'fpp' => $fileParentPath,
-		], self::JWT_SECRET_KEY, 'HS256');
+		], $this->getLockTokenKey(), 'HS256');
 	}
 }

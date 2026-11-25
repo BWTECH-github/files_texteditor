@@ -77,8 +77,14 @@ class FileHandlingControllerTest extends TestCase {
 	/** @var \OCP\Share\IShare|\PHPUnit\Framework\MockObject\MockObject */
 	private $shareMock;
 
-	# must be identical to the one in FileHandlingController
-	public const string JWT_SECRET_KEY = 'jwt-secret-key-for-files_texteditor';
+	/** @var \OCP\IConfig|\PHPUnit\Framework\MockObject\MockObject */
+	private $configMock;
+
+	/** Instanzgeheimnis der Tests (config.php „secret“) */
+	private const string INSTANCE_SECRET = 'instanz-geheimnis-der-tests';
+
+	/** Früher fest im Code eingetragener, öffentlich bekannter Schlüssel */
+	private const string OLD_PUBLIC_KEY = 'jwt-secret-key-for-files_texteditor';
 
 	public function setUp(): void {
 		parent::setUp();
@@ -113,6 +119,10 @@ class FileHandlingControllerTest extends TestCase {
 		$this->shareMock = $this->getMockBuilder('OCP\Share\IShare')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->configMock = $this->createMock('OCP\IConfig');
+		$this->configMock->method('getSystemValue')->willReturnCallback(
+			static fn ($key, $default = '') => $key === 'secret' ? self::INSTANCE_SECRET : $default
+		);
 
 		$this->l10nMock->expects($this->any())->method('t')->willReturnCallback(function ($text, $parameters = []) {
 			return \vsprintf($text, $parameters);
@@ -125,7 +135,8 @@ class FileHandlingControllerTest extends TestCase {
 			$this->loggerMock,
 			$this->shareManagerMock,
 			$this->userSessionMock,
-			$this->rootMock
+			$this->rootMock,
+			$this->configMock
 		);
 	}
 
@@ -485,7 +496,8 @@ class FileHandlingControllerTest extends TestCase {
 			$this->loggerMock,
 			$this->shareManagerMock,
 			$this->userSessionMock,
-			$this->rootMock
+			$this->rootMock,
+			$this->configMock
 		);
 
 		$this->requestMock->expects($this->any())
@@ -557,7 +569,8 @@ class FileHandlingControllerTest extends TestCase {
 			$this->loggerMock,
 			$this->shareManagerMock,
 			$this->userSessionMock,
-			$this->rootMock
+			$this->rootMock,
+			$this->configMock
 		);
 
 		$this->requestMock->expects($this->any())
@@ -991,6 +1004,63 @@ class FileHandlingControllerTest extends TestCase {
 		$this->assertSame($data['locked'], 'test@test.com');
 	}
 
+	/** Schlüssel der Sperr-Token, wie ihn der Controller aus dem Instanzgeheimnis ableitet */
+	private static function lockTokenKey(): string {
+		return \hash_hmac('sha256', 'files_texteditor-persistent-lock', self::INSTANCE_SECRET);
+	}
+
+	/**
+	 * Ein Sperr-Token, das mit dem früheren festen Schlüssel aus dem Code berechnet
+	 * wurde, gilt nicht: Sonst kann jeder mit Schreibrecht die Sperre eines anderen
+	 * Bearbeiters nachbilden. Die Datei bleibt für ihn schreibgeschützt.
+	 */
+	public function testLoadRejectsLockTokenFromPublicKey() {
+		$filename = 'test.txt';
+		$parentPath = '/test';
+		$fileId = 1;
+		$userId = 'test@test.com';
+
+		$this->requestMock->method('getParam')->willReturn(null);
+
+		$parentFolderMock = $this->createMock(Folder::class);
+		$parentFolderMock->method('getPath')->willReturn($parentPath);
+
+		$forgedToken = JWT::encode([
+			'uid' => $userId,
+			'st' => '',
+			'fid' => $fileId,
+			'fpp' => $parentPath,
+		], self::OLD_PUBLIC_KEY, 'HS256');
+
+		$persistentLockMock = $this->createMock(ILock::class);
+		$persistentLockMock->method('getOwner')->willReturn('ben via Text Editor');
+		$persistentLockMock->method('getToken')->willReturn($forgedToken);
+
+		$persistentLockingStorageMock = $this->createMock(IPersistentLockingStorageTest::class);
+		$persistentLockingStorageMock->method('instanceOfStorage')
+			->willReturnCallback(static fn ($class) => \ltrim($class, '\\') === IPersistentLockingStorage::class);
+		$persistentLockingStorageMock->method('getLocks')->willReturn([$persistentLockMock]);
+		$persistentLockingStorageMock->expects($this->never())->method('lockNodePersistent');
+
+		$this->userMock->method('getUID')->willReturn($userId);
+		$this->userSessionMock->method('getUser')->willReturn($this->userMock);
+
+		$this->fileMock->method('getId')->willReturn($fileId);
+		$this->fileMock->method('getInternalPath')->willReturn($parentPath . $filename);
+		$this->fileMock->method('getPermissions')->willReturn(Constants::PERMISSION_ALL);
+		$this->fileMock->method('getStorage')->willReturn($persistentLockingStorageMock);
+		$this->fileMock->method('getContent')->willReturn('test');
+		$this->fileMock->method('getMTime')->willReturn(65638643);
+		$this->fileMock->method('getParent')->willReturn($parentFolderMock);
+		$this->rootMock->method('get')->willReturn($this->fileMock);
+
+		$result = $this->controller->load($parentPath, $filename);
+		$data = $result->getData();
+		$this->assertSame(200, $result->getStatus());
+		$this->assertFalse($data['writeable']);
+		$this->assertSame('ben via Text Editor', $data['locked']);
+	}
+
 	public function dataSaveVerifyPersistentLock() {
 		return [
 			[null],
@@ -1046,7 +1116,7 @@ class FileHandlingControllerTest extends TestCase {
 				'st' => $shareToken,
 				'fid' => $fileId,
 				'fpp' => $parentPath,
-			], self::JWT_SECRET_KEY, 'HS256');
+			], self::lockTokenKey(), 'HS256');
 		} else {
 			$owner = $userId . ' via Text Editor';
 			$token = JWT::encode([
@@ -1054,7 +1124,7 @@ class FileHandlingControllerTest extends TestCase {
 				'st' => '',
 				'fid' => $fileId,
 				'fpp' => $parentPath,
-			], self::JWT_SECRET_KEY, 'HS256');
+			], self::lockTokenKey(), 'HS256');
 		}
 
 		$persistentLockMock
@@ -1276,14 +1346,14 @@ class FileHandlingControllerTest extends TestCase {
 				'st' => $shareToken,
 				'fid' => $fileId,
 				'fpp' => $parentPath,
-			], self::JWT_SECRET_KEY, 'HS256');
+			], self::lockTokenKey(), 'HS256');
 		} else {
 			$token = JWT::encode([
 				'uid' => $userId,
 				'st' => '',
 				'fid' => $fileId,
 				'fpp' => $parentPath,
-			], self::JWT_SECRET_KEY, 'HS256');
+			], self::lockTokenKey(), 'HS256');
 		}
 
 		$persistentLockMock->expects($this->never())
