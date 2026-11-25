@@ -4,6 +4,11 @@ All notable changes to this app will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.0.3] - 2026-11-25
+
+### Sicherheit
+- Sicherheit verbessert
+
 ## [3.0.2] - 2026-11-20
 
 Redesign-Linie: übernimmt aus main 2.7.4.

@@ -702,6 +702,63 @@ class FileHandlingControllerTest extends TestCase {
 		$this->assertSame($data['locked'], null);
 	}
 
+	public function dataLoadViewOnlyShare() {
+		return [
+			'Download nicht erlaubt' => [false, 403],
+			'Download erlaubt' => [true, 200],
+			'ohne Angabe' => [null, 200],
+		];
+	}
+
+	/**
+	 * Freigabe mit „Download nicht erlaubt“: Der Kern sperrt WebDAV-GET, der Editor
+	 * darf den Inhalt dann auch nicht ausliefern.
+	 *
+	 * @dataProvider dataLoadViewOnlyShare
+	 *
+	 * @param bool|null $download Attribut permissions.download
+	 * @param int $expectedStatus
+	 */
+	public function testLoadViewOnlyShare($download, $expectedStatus) {
+		$this->userMock->method('getUID')->willReturn('ben');
+		$this->userSessionMock->method('getUser')->willReturn($this->userMock);
+
+		$attributes = $this->createMock(\OCP\Share\IAttributes::class);
+		$attributes->method('getAttribute')
+			->with('permissions', 'download')
+			->willReturn($download);
+		$this->shareMock->method('getAttributes')->willReturn($attributes);
+		$sharedStorage = $this->getMockBuilder(\OCA\Files_Sharing\SharedStorage::class)
+			->disableOriginalConstructor()
+			->getMock();
+		$sharedStorage->method('instanceOfStorage')
+			->willReturnCallback(static function ($class) {
+				return \ltrim($class, '\\') === 'OCA\Files_Sharing\SharedStorage';
+			});
+		$sharedStorage->method('getShare')->willReturn($this->shareMock);
+
+		$this->fileMock->method('getStorage')->willReturn($sharedStorage);
+		$this->fileMock->method('getPermissions')->willReturn(Constants::PERMISSION_READ);
+		if ($expectedStatus === 200) {
+			$this->fileMock->method('getContent')->willReturn('geheim');
+		} else {
+			$this->fileMock->expects($this->never())->method('getContent');
+		}
+		$this->rootMock->method('get')->willReturn($this->fileMock);
+
+		$result = $this->controller->load('/', 'notiz.txt');
+		$data = $result->getData();
+
+		$this->assertSame($expectedStatus, $result->getStatus());
+		if ($expectedStatus === 200) {
+			$this->assertSame('geheim', $data['filecontents']);
+			$this->assertFalse($data['writeable']);
+		} else {
+			$this->assertArrayNotHasKey('filecontents', $data);
+			$this->assertSame('Cannot read the file. Not enough permissions', $data['message']);
+		}
+	}
+
 	public function dataLoadAcquirePersistentLock() {
 		return [
 			[Constants::PERMISSION_ALL, null, true, 'test@test.com'],
@@ -768,7 +825,7 @@ class FileHandlingControllerTest extends TestCase {
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('instanceOfStorage')
-			->willReturn(true);
+			->willReturnCallback(static fn ($class) => \ltrim($class, '\\') === IPersistentLockingStorage::class);
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('getLocks')
@@ -874,7 +931,7 @@ class FileHandlingControllerTest extends TestCase {
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('instanceOfStorage')
-			->willReturn(true);
+			->willReturnCallback(static fn ($class) => \ltrim($class, '\\') === IPersistentLockingStorage::class);
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('getLocks')
@@ -1014,7 +1071,7 @@ class FileHandlingControllerTest extends TestCase {
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('instanceOfStorage')
-			->willReturn(true);
+			->willReturnCallback(static fn ($class) => \ltrim($class, '\\') === IPersistentLockingStorage::class);
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('getLocks')
@@ -1114,7 +1171,7 @@ class FileHandlingControllerTest extends TestCase {
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('instanceOfStorage')
-			->willReturn(true);
+			->willReturnCallback(static fn ($class) => \ltrim($class, '\\') === IPersistentLockingStorage::class);
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('getLocks')
@@ -1242,7 +1299,7 @@ class FileHandlingControllerTest extends TestCase {
 
 		$persistentLockingStorageMock->expects($this->any())
 			->method('instanceOfStorage')
-			->willReturn(true);
+			->willReturnCallback(static fn ($class) => \ltrim($class, '\\') === IPersistentLockingStorage::class);
 
 		if ($isLocked) {
 			$persistentLockingStorageMock->expects($this->any())

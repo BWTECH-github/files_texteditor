@@ -1,0 +1,16 @@
+# Nicht ins Paket (git archive)
+/.gitattributes export-ignore
+/.github export-ignore
+/.gitignore export-ignore
+/.phan export-ignore
+/.php-cs-fixer.dist.php export-ignore
+/CONTRIBUTING.md export-ignore
+/Makefile export-ignore
+/l10n/.gitkeep export-ignore
+/l10n/.tx export-ignore
+/phpcs.xml export-ignore
+/phpstan.neon export-ignore
+/phpunit.xml export-ignore
+/sonar-project.properties export-ignore
+/tests export-ignore
+/vendor-bin export-ignore

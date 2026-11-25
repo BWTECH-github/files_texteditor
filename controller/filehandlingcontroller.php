@@ -135,6 +135,10 @@ class FileHandlingController extends Controller {
 					return new DataResponse(['message' => (string)$this->l->t('This file is too big to be opened. Please download the file instead.')], Http::STATUS_BAD_REQUEST);
 				}
 
+				if (!$this->isDownloadAllowed($node)) {
+					return new DataResponse(['message' => (string)$this->l->t('Cannot read the file. Not enough permissions')], Http::STATUS_FORBIDDEN);
+				}
+
 				/** @var mixed $fileContents */
 				$fileContents = $node->getContent();
 
@@ -396,6 +400,22 @@ class FileHandlingController extends Controller {
 		}
 
 		return $node;
+	}
+
+	/**
+	 * Freigabe mit „Download nicht erlaubt“ (Attribut permissions.download): Der Kern
+	 * sperrt dann WebDAV-GET und den Download, der Editor liefert den Inhalt ebenso
+	 * wenig aus. Dieselbe Regel wie files_sharing ViewOnly.
+	 */
+	private function isDownloadAllowed(File $node): bool {
+		$storage = $node->getStorage();
+		if ($storage === null || !$storage->instanceOfStorage('OCA\Files_Sharing\SharedStorage')) {
+			return true;
+		}
+		/** @var \OCA\Files_Sharing\SharedStorage $storage */
+		$attributes = $storage->getShare()->getAttributes();
+
+		return $attributes === null || $attributes->getAttribute('permissions', 'download') !== false;
 	}
 
 	private function getPermissions(File $node): int {
